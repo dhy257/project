@@ -2,6 +2,7 @@ plugins {
 	id 'java'
 	id 'org.springframework.boot' version '3.4.1'
 	id 'io.spring.dependency-management' version '1.1.7'
+	id 'application'
 }
 
 group = 'com.graduationwork'
@@ -21,7 +22,9 @@ configurations {
 
 repositories {
 	mavenCentral()
+	jcenter()
 	maven { url 'https://repo.spring.io/milestone' }
+	maven { url 'https://repo.spring.io/snapshot' }  // 추가한 리포지토리
 }
 
 ext {
@@ -30,25 +33,20 @@ ext {
 
 dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
-	implementation 'org.springframework.boot:spring-boot-starter-security'
 	implementation 'org.springframework.boot:spring-boot-starter-web'
-	implementation 'org.springframework.ai:spring-ai-mongodb-atlas-store-spring-boot-starter'
-	implementation 'org.springframework.ai:spring-ai-openai-spring-boot-starter'
 	implementation 'io.github.cdimascio:dotenv-java:3.0.0'
 	compileOnly 'org.projectlombok:lombok'
 	developmentOnly 'org.springframework.boot:spring-boot-devtools'
-	runtimeOnly 'com.mysql:mysql-connector-java'
 	annotationProcessor 'org.projectlombok:lombok'
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
-	testImplementation 'org.springframework.security:spring-security-test'
 	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
-
+	runtimeOnly 'mysql:mysql-connector-java:8.0.29'  // MySQL JDBC 드라이버 추가
+	implementation 'org.springframework:spring-core:6.2.1'
+	implementation 'org.apache.commons:commons-compress:1.21'
 }
 
-dependencyManagement {
-	imports {
-		mavenBom "org.springframework.ai:spring-ai-bom:${springAiVersion}"
-	}
+application {
+	mainClassName = 'com.graduationwork.back_end.BackEndApplication'
 }
 
 tasks.named('test') {
