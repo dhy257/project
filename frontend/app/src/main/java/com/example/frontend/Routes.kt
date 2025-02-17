@@ -1,0 +1,6 @@
+package com.example.frontend
+
+object Routes {
+    var LoginScreen = "LoginScreen"
+    var RegisterScreen = "RegisterScreen"
+}
