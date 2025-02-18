@@ -1,8 +1,12 @@
 from flask import Flask, request, jsonify
 import torch
 from transformers import BertTokenizer, BertForSequenceClassification
+from flask_cors import CORS
 
 app = Flask(__name__)
+
+# CORS 설정 (모든 도메인에서의 요청을 허용)
+CORS(app)
 
 # BERT 모델 로드 (fine-tuned 모델)
 model = BertForSequenceClassification.from_pretrained('bert-base-multilingual-cased', num_labels=18)
@@ -24,29 +28,24 @@ def predict():
             app.logger.error("No JSON data received")
             return jsonify({'error': 'No JSON data received'}), 400
 
-        # 데이터에서 'text'가 리스트로 전달되도록 처리
         texts = data.get("text", [])
         if not isinstance(texts, list):
             texts = [texts]  # 단일 텍스트일 경우 리스트로 변환
 
-        app.logger.info(f"Received data: {data}")  # 요청 받은 데이터 확인
-        app.logger.info(f"Received texts: {texts}")  # 받은 텍스트들 확인
+        app.logger.info(f"Received data: {data}")
+        app.logger.info(f"Received texts: {texts}")
 
         results = {}
 
-        # 각 항목에 대해 예측 수행
         for text in texts:
-            # 텍스트를 BERT 토크나이저로 변환
             inputs = tokenizer(text, return_tensors='pt', padding=True, truncation=True, max_length=64)
-
-            # 모델로 예측
             with torch.no_grad():
                 outputs = model(**inputs)
-                logits = outputs.logits  # logits 값 출력
-                app.logger.info("Logits: %s", logits)  # logits 값 확인
+                logits = outputs.logits
+                app.logger.info("Logits: %s", logits)
                 prediction = torch.argmax(logits, dim=1).item()
+                app.logger.info("Prediction: %d", prediction)
 
-            # 카테고리 이름 매핑
             label_map = {
                 0: "곡류", 1: "조미식품", 2: "유제품류", 3: "채소류", 4: "가공식품류",
                 5: "즉석식품류", 6: "기타식품류", 7: "과일류", 8: "육류 및 그 제품",
@@ -56,7 +55,9 @@ def predict():
             }
 
             category_name = label_map.get(prediction, "알 수 없는 카테고리")
-            results[text] = category_name  # 항목별로 결과 저장
+            app.logger.info("Category Name: %s", category_name)
+
+            results[text] = category_name
 
         return jsonify({'predictions': results})
 

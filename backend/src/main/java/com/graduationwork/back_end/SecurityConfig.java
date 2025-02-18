@@ -14,10 +14,11 @@ public class SecurityConfig {
         http
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/api/user/register", "/api/user/login", "api/user/logout").permitAll()
+                        .requestMatchers("/api/user/register", "/api/user/login", "api/user/logout","/predict").permitAll()
                         .anyRequest().authenticated() // 로그인, 회원가입, 로그아웃을 제외한 요청은 인증 필요
                 );
         return http.build();
     }
+
 
 }

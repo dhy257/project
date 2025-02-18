@@ -2,7 +2,11 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/back-end.iml" filepath="$PROJECT_DIR$/.idea/modules/back-end.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/back-end.main.iml" filepath="$PROJECT_DIR$/.idea/modules/back-end.main.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/back-end.test.iml" filepath="$PROJECT_DIR$/.idea/modules/back-end.test.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/frontend.iml" filepath="$PROJECT_DIR$/.idea/modules/frontend.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/app/frontend.app.iml" filepath="$PROJECT_DIR$/.idea/modules/app/frontend.app.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/project.iml" filepath="$PROJECT_DIR$/.idea/project.iml" />
     </modules>
   </component>

@@ -22,31 +22,29 @@ configurations {
 
 repositories {
 	mavenCentral()
-	jcenter()
-	maven { url 'https://repo.spring.io/milestone' }
-	maven { url 'https://repo.spring.io/snapshot' }  // 추가한 리포지토리
+	jcenter()  // You may remove this if it's not needed
 }
 
 ext {
-	set('springAiVersion', "1.0.0-M4")
+	set('springAiVersion', "1.0.0-M4")  // If needed, reference this version elsewhere
 }
 
 dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
 	implementation 'org.springframework.boot:spring-boot-starter-web'
 	implementation 'io.github.cdimascio:dotenv-java:3.0.0'
-	implementation 'mysql:mysql-connector-java:8.0.26'  // 최신 버전으로 업데이트
-
+	implementation 'mysql:mysql-connector-java:8.0.29'  // Keep the latest version
+	implementation 'org.springframework.boot:spring-boot-starter-security'
 	compileOnly 'org.projectlombok:lombok'
 	developmentOnly 'org.springframework.boot:spring-boot-devtools'
 	annotationProcessor 'org.projectlombok:lombok'
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
-	runtimeOnly 'mysql:mysql-connector-java:8.0.29'  // MySQL JDBC 드라이버 추가
 	implementation 'org.springframework:spring-core:6.2.1'
 	implementation 'org.apache.commons:commons-compress:1.21'
+	implementation 'org.springframework.security:spring-security-web:6.2.0'
+	implementation 'org.springframework.security:spring-security-config:6.2.0'
 }
-
 
 tasks.named('test') {
 	useJUnitPlatform()
