@@ -33,6 +33,11 @@ fun FreshCheckApp() {
                 CalendarScreen(navController)
             }
 
+            //재료추가 화면
+            composable(Routes.IngredientScreen) {
+                IngredientScreen(navController)
+            }
+
 
 
         })

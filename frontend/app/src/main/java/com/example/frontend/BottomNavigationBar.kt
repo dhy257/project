@@ -47,7 +47,7 @@ fun BottomNavigationBar(
             isSelected = selectedTab == "Ingredient",
             onClick = {
                 onTabSelected("Ingredient")
-                //navigateSafely(navController, Routes.test)
+                navigateSafely(navController, Routes.IngredientScreen)
             }
         )
 

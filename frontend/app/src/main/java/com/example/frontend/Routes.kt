@@ -5,4 +5,5 @@ object Routes {
     var RegisterScreen = "RegisterScreen"
     var MainScreen = "MainScreen"
     var CalendarScreen = "CalendarScren"
+    var IngredientScreen = "IngredientScreen"
 }
