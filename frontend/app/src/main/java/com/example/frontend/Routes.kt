@@ -7,4 +7,5 @@ object Routes {
     var CalendarScreen = "CalendarScren"
     var IngredientScreen = "IngredientScreen"
     var ReciptScreen = "ReciptScreen"
+    var CameraScreen = "Camerascreen"
 }

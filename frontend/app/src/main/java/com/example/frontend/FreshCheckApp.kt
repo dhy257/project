@@ -43,7 +43,10 @@ fun FreshCheckApp() {
                 ReciptScreen(navController)
             }
 
-
+            //카메라 화면
+            composable(Routes.CameraScreen) {
+                CameraScreen(navController)
+            }
 
         })
 }

@@ -647,7 +647,7 @@ fun IngredientScreen(navController: NavController) {
                 ) {
                     Column(
                         modifier = Modifier.clickable {
-                            //navController.navigate(Routes.CameraScreen)
+                            navController.navigate(Routes.CameraScreen)
                         },
                         verticalArrangement = Arrangement.Center,
                         horizontalAlignment = Alignment.CenterHorizontally

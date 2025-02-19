@@ -64,7 +64,7 @@ fun ReciptScreen(
         15.dp
     ),
         onClick = {
-            navController.navigate(Routes.MainScreen)
+            navController.navigate(Routes.IngredientScreen)
         }
     ) {
         Icon(
