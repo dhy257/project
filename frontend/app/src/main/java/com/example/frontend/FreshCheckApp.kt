@@ -38,6 +38,11 @@ fun FreshCheckApp() {
                 IngredientScreen(navController)
             }
 
+            //영수증 보기 화면
+            composable(Routes.ReciptScreen) {
+                ReciptScreen(navController)
+            }
+
 
 
         })

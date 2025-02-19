@@ -676,7 +676,7 @@ fun IngredientScreen(navController: NavController) {
                 Spacer(modifier = Modifier.height(20.dp))
                 Button(
                     onClick = {
-                        //navController.navigate(Routes.ReciptScreen)
+                        navController.navigate(Routes.ReciptScreen)
                     }, modifier = Modifier
                         .fillMaxWidth()
                         .padding(horizontal = 60.dp)
