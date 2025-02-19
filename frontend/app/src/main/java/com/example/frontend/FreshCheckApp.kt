@@ -23,5 +23,10 @@ fun FreshCheckApp() {
                 RegisterScreen(navController, context)
             }
 
+            //메인화면
+            composable(Routes.MainScreen) {
+                MainScreen(navController)
+            }
+
         })
 }

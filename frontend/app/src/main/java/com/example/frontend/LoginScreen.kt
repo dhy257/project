@@ -220,7 +220,7 @@ fun LoginScreen(
                 onDismiss = { showDialog = false },
                 onConfirm = {
                     showDialog = false
-                    //if (loginSuccess) navController.navigate(Routes.MainScreen)
+                    if (loginSuccess) navController.navigate(Routes.MainScreen)
                 }
             )
         }
