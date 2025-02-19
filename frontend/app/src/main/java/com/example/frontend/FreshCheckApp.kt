@@ -28,5 +28,12 @@ fun FreshCheckApp() {
                 MainScreen(navController)
             }
 
+            //캘린더 화면
+            composable(Routes.CalendarScreen) {
+                CalendarScreen(navController)
+            }
+
+
+
         })
 }

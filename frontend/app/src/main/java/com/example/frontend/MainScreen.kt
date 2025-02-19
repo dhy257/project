@@ -167,7 +167,7 @@ fun MainScreen(
                     color = Color(0xFFEAF6FF), shape = RoundedCornerShape(size = 20.dp)
                 )
                 .clickable {
-                    //navController.navigate(Routes.CalendarScreen)
+                    navController.navigate(Routes.CalendarScreen)
                 }) {
                 Icon(
                     modifier = Modifier
