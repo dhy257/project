@@ -8,11 +8,14 @@ import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import com.example.frontend.ui.theme.FrontendTheme
@@ -46,9 +49,14 @@ class Loading : ComponentActivity() {
             startActivity(Intent(this@Loading, MainActivity::class.java))
         }
         Image(
-            modifier = Modifier.alpha(alpha.value),
+            modifier = Modifier
+                .alpha(alpha.value)
+                .fillMaxSize(),
             painter = painterResource(R.drawable.loading),
-            contentDescription = null
+            contentDescription = "로딩화면",
+            contentScale = ContentScale.Crop
         )
+
+
     }
 }
