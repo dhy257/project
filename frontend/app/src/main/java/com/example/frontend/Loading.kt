@@ -3,6 +3,7 @@ package com.example.frontend
 import android.annotation.SuppressLint
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
@@ -25,9 +26,11 @@ import kotlinx.coroutines.delay
 class Loading : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        Log.d("LoadingActivity", "onCreate 실행됨") //실행 여부 확인
         enableEdgeToEdge()
 
         setContent {
+            Log.d("LoadingActivity", "SplashScreen 실행됨") // 실행 여부 확인
             FrontendTheme {
                 SplashScreen()
             }
