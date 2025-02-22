@@ -12,12 +12,18 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
-                .csrf(AbstractHttpConfigurer::disable)
+                .csrf(AbstractHttpConfigurer::disable) // CSRF 비활성화
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/api/user/register", "/api/user/login", "api/user/logout").permitAll()
-                        .anyRequest().authenticated() // 로그인, 회원가입, 로그아웃을 제외한 요청은 인증 필요
+                        .requestMatchers(
+                                "/api/user/register",
+                                "/api/user/login",
+                                "/api/user/logout",
+                                "/predict",
+                                "/receipt/**",  // ✅ `/receipt/upload` 허용
+                                "/item/**"// ✅ `/item/save` 허용
+                        ).permitAll()
+                        .anyRequest().authenticated() // 나머지는 인증 필요
                 );
         return http.build();
     }
-
 }

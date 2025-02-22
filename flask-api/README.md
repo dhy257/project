@@ -32,7 +32,13 @@
 3. 필요한 패키지를 설치합니다.
 
     ```bash
-    pip install -r requirements.txt
+    pip install --upgrade pip setuptools
+   pip install torch
+   pip install flask
+   pip install transformers
+   pip install flask-cors
+
+
     ```
 
 4. Flask 서버를 실행합니다.
@@ -68,8 +74,9 @@
 
     ```json
     {
-      "items": ["milk", "bread", "cherry tomatoes"]
+   "text": ["고기", "음료수"]
     }
+
     ```
 
 3. **응답 예시**:

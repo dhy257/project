@@ -22,31 +22,48 @@ configurations {
 
 repositories {
 	mavenCentral()
-	jcenter()
-	maven { url 'https://repo.spring.io/milestone' }
-	maven { url 'https://repo.spring.io/snapshot' }  // 추가한 리포지토리
 }
 
 ext {
-	set('springAiVersion', "1.0.0-M4")
+	set('springAiVersion', "1.0.0-M4")  // If needed, reference this version elsewhere
 }
 
 dependencies {
+	// JPA 관련 의존성
 	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
 	implementation 'org.springframework.boot:spring-boot-starter-web'
-	implementation 'io.github.cdimascio:dotenv-java:3.0.0'
-	implementation 'mysql:mysql-connector-java:8.0.26'  // 최신 버전으로 업데이트
 
+	// MySQL 커넥터
+	implementation 'mysql:mysql-connector-java:8.0.29'
+
+	// 보안 관련 의존성
+	implementation 'org.springframework.boot:spring-boot-starter-security'
+
+	// Lombok
 	compileOnly 'org.projectlombok:lombok'
 	developmentOnly 'org.springframework.boot:spring-boot-devtools'
 	annotationProcessor 'org.projectlombok:lombok'
+
+	// 테스트 관련 의존성
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
-	runtimeOnly 'mysql:mysql-connector-java:8.0.29'  // MySQL JDBC 드라이버 추가
-	implementation 'org.springframework:spring-core:6.2.1'
-	implementation 'org.apache.commons:commons-compress:1.21'
-}
 
+	// 필요시 추가적인 의존성 (예: .env 파일 로드)
+	implementation 'io.github.cdimascio:dotenv-java:3.0.0'
+
+	// 압축 관련 라이브러리
+	implementation 'org.apache.commons:commons-compress:1.21'
+
+	// Spring Security
+	implementation 'org.springframework.security:spring-security-web:6.2.0'
+	implementation 'org.springframework.security:spring-security-config:6.2.0'
+
+	// OkHttp 라이브러리 - 네이버 OCR API 호출을 위한 의존성
+	implementation 'com.squareup.okhttp3:okhttp:4.9.3'
+
+	// JSON 처리 라이브러리
+	implementation 'org.json:json:20210307'
+}
 
 tasks.named('test') {
 	useJUnitPlatform()

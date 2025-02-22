@@ -6,3 +6,5 @@ __pycache__/
 
 # pyenv 설정 파일
 .python-version
+.DS_Store
+
