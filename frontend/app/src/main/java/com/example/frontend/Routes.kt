@@ -8,4 +8,5 @@ object Routes {
     var IngredientScreen = "IngredientScreen"
     var ReciptScreen = "ReciptScreen"
     var CameraScreen = "Camerascreen"
+    var FridgeScreen = "FridgeScreen"
 }
