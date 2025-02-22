@@ -2,7 +2,6 @@ plugins {
 	id 'java'
 	id 'org.springframework.boot' version '3.4.1'
 	id 'io.spring.dependency-management' version '1.1.7'
-	id 'application'
 }
 
 group = 'com.graduationwork'
@@ -22,47 +21,34 @@ configurations {
 
 repositories {
 	mavenCentral()
+	maven { url 'https://repo.spring.io/milestone' }
 }
 
 ext {
-	set('springAiVersion', "1.0.0-M4")  // If needed, reference this version elsewhere
+	set('springAiVersion', "1.0.0-M4")
 }
 
 dependencies {
-	// JPA 관련 의존성
 	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
-	implementation 'org.springframework.boot:spring-boot-starter-web'
-
-	// MySQL 커넥터
-	implementation 'mysql:mysql-connector-java:8.0.29'
-
-	// 보안 관련 의존성
 	implementation 'org.springframework.boot:spring-boot-starter-security'
-
-	// Lombok
+	implementation 'org.springframework.boot:spring-boot-starter-web'
+	implementation 'org.springframework.ai:spring-ai-mongodb-atlas-store-spring-boot-starter'
+	implementation 'org.springframework.ai:spring-ai-openai-spring-boot-starter'
+	implementation 'io.github.cdimascio:dotenv-java:3.0.0'
 	compileOnly 'org.projectlombok:lombok'
 	developmentOnly 'org.springframework.boot:spring-boot-devtools'
+	runtimeOnly 'com.mysql:mysql-connector-java'
 	annotationProcessor 'org.projectlombok:lombok'
-
-	// 테스트 관련 의존성
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
+	testImplementation 'org.springframework.security:spring-security-test'
 	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 
-	// 필요시 추가적인 의존성 (예: .env 파일 로드)
-	implementation 'io.github.cdimascio:dotenv-java:3.0.0'
+}
 
-	// 압축 관련 라이브러리
-	implementation 'org.apache.commons:commons-compress:1.21'
-
-	// Spring Security
-	implementation 'org.springframework.security:spring-security-web:6.2.0'
-	implementation 'org.springframework.security:spring-security-config:6.2.0'
-
-	// OkHttp 라이브러리 - 네이버 OCR API 호출을 위한 의존성
-	implementation 'com.squareup.okhttp3:okhttp:4.9.3'
-
-	// JSON 처리 라이브러리
-	implementation 'org.json:json:20210307'
+dependencyManagement {
+	imports {
+		mavenBom "org.springframework.ai:spring-ai-bom:${springAiVersion}"
+	}
 }
 
 tasks.named('test') {
