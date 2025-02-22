@@ -1,6 +1,7 @@
 
 package com.example.frontend
 
+import android.util.Log
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -23,6 +24,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.getValue
@@ -36,26 +38,19 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
-
-import androidx.compose.runtime.setValue
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
+import com.example.frontend.extrafunc.BottomNavigationBar
+import com.example.frontend.extrafunc.DDayBar
 
 @Preview(showBackground = true)
 @Composable
 fun PreviewMainScreen() {
-    MainScreen(navController = rememberNavController())
+    MainScreen(
+        navController = rememberNavController()
+    )
 }
-
-data class BottomNavigationItem(
-    val title: String,
-    val selectedIcon: ImageVector,
-    val unselectedIcon: ImageVector
-)
 
 @Composable
 fun MainScreen(
@@ -65,6 +60,7 @@ fun MainScreen(
 
     var selectedTab by remember { mutableStateOf("Main") }
 
+    var fridgeList by remember { mutableStateOf(fridgeList) }
 
     BackHandler {
         // 뒤로 가기 버튼을 눌렀을 때 아무 동작도 하지 않도록 설정
@@ -106,7 +102,10 @@ fun MainScreen(
         )
     }
 
-    //D-day bar
+    LaunchedEffect(fridgeList) {
+        Log.d("FridgeListLog", "현재 냉장고 리스트: $fridgeList")
+    }
+
     Column(
         modifier = Modifier.fillMaxSize()
     ) {
@@ -117,8 +116,9 @@ fun MainScreen(
                 .wrapContentHeight()
                 .background(color = Color(0xFFEAF6FF))
         ) {
-
+            DDayBar(fridgeList) // 냉장고 리스트에서 유통기한 가까운 3개 표시
         }
+
     }
 
 
@@ -167,6 +167,7 @@ fun MainScreen(
                     color = Color(0xFFEAF6FF), shape = RoundedCornerShape(size = 20.dp)
                 )
                 .clickable {
+                    //navController.navigate(Routes.CalendarScreen)
                     navController.navigate(Routes.CalendarScreen)
                 }) {
                 Icon(
@@ -235,7 +236,7 @@ fun MainScreen(
                     color = Color(0xFFEAF6FF), shape = RoundedCornerShape(size = 20.dp)
                 )
                 .clickable {
-
+                    navController.navigate(Routes.FridgeScreen)
                 }) {
                 Icon(
                     modifier = Modifier

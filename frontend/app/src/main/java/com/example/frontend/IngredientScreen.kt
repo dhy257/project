@@ -5,8 +5,6 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
 import androidx.compose.material3.TabRowDefaults.SecondaryIndicator
@@ -22,19 +20,35 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.focus.onFocusChanged
-import androidx.compose.ui.input.pointer.motionEventSpy
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.window.Popup
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import java.time.Instant
 import java.time.LocalDate
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
-import java.time.temporal.ChronoUnit
+
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
+import com.example.frontend.extrafunc.BottomNavigationBar
+import com.example.frontend.extrafunc.CartIngredientRow
+import com.example.frontend.extrafunc.DatePickerModal
+import com.example.frontend.extrafunc.IngredientRow
+import com.example.frontend.extrafunc.TopPopupMessage
+import com.example.frontend.extrafunc.navigateSafely
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
+
+// 냉장고 재료 리스트 (전역 변수)
+val fridgeList = mutableStateListOf<Ingredient>()
+
+// 장바구니 리스트 (전역 변수로 변경하여 상태 유지)
+val cartList = mutableStateListOf<String>()
+
+val ingredientList = mutableStateListOf<Ingredient>()
 
 @Composable
 fun IngredientScreen(navController: NavController) {
@@ -49,24 +63,17 @@ fun IngredientScreen(navController: NavController) {
     var expanded by remember { mutableStateOf(false) }
     var selectedCategory by remember { mutableStateOf(foodCategories.first()) }
 
-
-    // 재료 정보를 저장할 데이터 클래스
-    data class Ingredient(
-        val name: String,         // 제품명
-        val category: String,     // 식품군
-        val addedDate: LocalDate, // 제품 추가 날짜
-        val expiryDate: LocalDate // 유통기한
-    ) {
-        // D-day 계산 (유통기한 - 추가한 날짜)
-        fun getDday(): Long {
-            return ChronoUnit.DAYS.between(addedDate, expiryDate)
-        }
-    }
     // 상태 변수 (재료 목록 저장)
-    var ingredientList by remember { mutableStateOf(mutableListOf<Ingredient>()) }
+    //val ingredientList = remember { mutableStateListOf<Ingredient>() }
 
-    //장바구니 리스트 추가
-    var cartList by remember { mutableStateOf(mutableListOf<Ingredient>()) }
+    // 장바구니 리스트 (재료 이름만 저장)
+    //val cartList = remember { mutableStateListOf<String>() }
+
+
+    // 팝업 상태 & 메시지
+    var showPopup by remember { mutableStateOf(false) }
+    var popupMessage by remember { mutableStateOf("") }
+    val coroutineScope = rememberCoroutineScope() //CoroutineScope 선언
 
 
 
@@ -82,6 +89,12 @@ fun IngredientScreen(navController: NavController) {
         contentScale = ContentScale.Crop
     )
 
+// 팝업 메시지
+    if (showPopup) {
+        TopPopupMessage(message = "새로운 재료(${ingredientList.size})가 추가되었습니다") {
+            showPopup = false
+        }
+    }
 
 
     Row(
@@ -91,7 +104,7 @@ fun IngredientScreen(navController: NavController) {
         verticalAlignment = Alignment.CenterVertically
     ) {
         Image(painter = painterResource(id = R.drawable.alarm_icon),
-            contentDescription = "뒤로 가기",
+            contentDescription = "알람",
             modifier = Modifier
                 .size(40.dp)
                 .clickable {
@@ -99,24 +112,29 @@ fun IngredientScreen(navController: NavController) {
                 })
     }
 
-    Box() {
-        Text(
-            modifier = Modifier.padding(25.dp, 115.dp),
-            text = "어떤 재료가 새로 들어왔나요?",
-            fontSize = 25.sp,
-            fontFamily = pretendard,
-            fontWeight = FontWeight(900),
-            color = Color(0xFF1A72D3)
-        )
+    if (!isTextFieldFocused && selectedTabIndex == -1) {
+        Box(
+            modifier = Modifier
+                .padding(top = 130.dp, start = 16.dp) // 고정 위치 설정
+        ) {
+            Text(
+                text = "어떤 재료가 새로 들어왔나요?",
+                fontSize = 25.sp,
+                fontFamily = pretendard,
+                fontWeight = FontWeight(900),
+                color = Color(0xFF1A72D3),
+                modifier = Modifier.align(Alignment.Center)
+            )
+        }
     }
+
+
 
     Column(
         modifier = Modifier.fillMaxSize(),
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Spacer(modifier = Modifier.height(20.dp))
-
         TabRow(selectedTabIndex = if (selectedTabIndex >= 0) selectedTabIndex else 0,
             modifier = Modifier
                 .padding(horizontal = 66.dp)
@@ -304,9 +322,14 @@ fun IngredientScreen(navController: NavController) {
                                 )
                                 Button(
                                     onClick = { showDatePicker = true },
-                                    colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF90CAF8)), // 색상 변경
+                                    colors = ButtonDefaults.buttonColors(
+                                        containerColor = Color(
+                                            0xFF90CAF8
+                                        )
+                                    ), // 색상 변경
                                     shape = RoundedCornerShape(10.dp),
-                                    modifier = Modifier.wrapContentWidth()
+                                    modifier = Modifier
+                                        .wrapContentWidth()
                                         .padding(end = 5.dp) //버튼 옆으로 5dp 이동
                                 ) {
                                     Text(
@@ -445,62 +468,50 @@ fun IngredientScreen(navController: NavController) {
 
                 Spacer(modifier = Modifier.height(10.dp))
 
-
-                //재료 담기는 칸
+                //재료 담기는 칸 (3개 이상부터 스크롤 가능)
                 Box(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .wrapContentSize()
                         .background(
                             color = Color(0xFFEAF6FF), shape = RoundedCornerShape(size = 10.dp)
                         )
+                        .wrapContentHeight()
                 ) {
                     Column {
-                        ingredientList.forEach { ingredient ->
-                            Row(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .padding(8.dp),
-                                verticalAlignment = Alignment.CenterVertically
-                            ) {
-                                Row(
+                        if (ingredientList.isNotEmpty()) {
+                            if (ingredientList.size > 3) {
+                                LazyColumn(
                                     modifier = Modifier
                                         .fillMaxWidth()
-                                        .height(50.dp)
-                                        .background(
-                                            Color.Transparent, RoundedCornerShape(10.dp)
-                                        ),
-                                    verticalAlignment = Alignment.CenterVertically,
-                                    horizontalArrangement = Arrangement.SpaceBetween
+                                        .height(180.dp) // 최대 높이 설정 (스크롤 가능)
                                 ) {
-                                    Text(
-                                        text = ingredient.name + "/D-" + ingredient.getDday() + "/" + ingredient.category,
-                                        fontSize = 18.sp,
-                                        fontWeight = FontWeight(500),
-                                        fontFamily = pretendard,
-                                        color = Color(0xFF1045A1),
-                                        modifier = Modifier
-                                            .weight(1f)
-                                            .padding(8.dp)
-                                    )
-
-                                    IconButton(
-                                        onClick = {
-                                            ingredientList =
-                                                ingredientList.filter { it != ingredient }
-                                                    .toMutableList()
-                                        }, modifier = Modifier.size(30.dp)
-                                    ) {
-                                        Icon(
-                                            painter = painterResource(id = android.R.drawable.ic_delete),
-                                            contentDescription = "삭제",
-                                            tint = Color.Red
-                                        )
+                                    items(ingredientList) { ingredient ->
+                                        IngredientRow(ingredient, ingredientList)
                                     }
                                 }
-
+                            } else {
+                                ingredientList.forEach { ingredient ->
+                                    IngredientRow(ingredient, ingredientList)
+                                }
+                            }
+                        } else {
+                            Box(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .height(55.dp),
+                                contentAlignment = Alignment.Center
+                            ) {
+                                Text(
+                                    text = "담긴 재료가 없습니다.",
+                                    fontSize = 18.sp,
+                                    fontWeight = FontWeight(500),
+                                    fontFamily = pretendard,
+                                    textAlign = TextAlign.Center,
+                                    color = Color(0xFF1045A1)
+                                )
                             }
                         }
+
                         // 추가하기 버튼
                         Box(
                             modifier = Modifier
@@ -513,12 +524,23 @@ fun IngredientScreen(navController: NavController) {
                                 )
                                 .clickable {
                                     if (ingredientList.isNotEmpty()) {
-                                        cartList.addAll(ingredientList) //장바구니로 이동
+                                        fridgeList.addAll(ingredientList) // 담긴재료에서 냉장고 리스트로 이동
 
-                                        //리스트 비우기
-                                        ingredientList = ingredientList.filter { false }.toMutableList()
+                                        // 팝업 메시지 업데이트
+                                        popupMessage = "새로운 재료(${ingredientList.size})개가 추가되었습니다"
+                                        showPopup = true
+
+                                        //비동기적으로 실행하여 2초 후에 `clear()` 실행
+                                        coroutineScope.launch {
+                                            delay(500) // 2초 대기 후 실행
+                                            ingredientList.clear() // 담긴 재료 비우기
+                                        }
+                                        //navController.navigate(Routes.FridgeScreen)
+
+
                                     }
-                                }, contentAlignment = Alignment.Center
+                                },
+                            contentAlignment = Alignment.Center
                         ) {
                             Text(
                                 text = "추가하기",
@@ -534,13 +556,14 @@ fun IngredientScreen(navController: NavController) {
                     }
                 }
 
+
             }
+
 
         }
 
         // **장바구니 탭 UI**
         if (selectedTabIndex == 1) {
-
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -548,61 +571,110 @@ fun IngredientScreen(navController: NavController) {
                 verticalArrangement = Arrangement.Center,
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                //장바구니 담기는 칸
                 Box(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .wrapContentSize()
+                        .background(
+                            color = Color(0xFFBBDEFA), shape = RoundedCornerShape(size = 10.dp)
+                        ), contentAlignment = Alignment.Center
+                ) {
+                    Column {
+                        // 재료 입력
+                        Box(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .height(55.dp)
+                                .background(Color(0xFFBBDEFA), RoundedCornerShape(10.dp))
+                                .padding(16.dp),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Text(
+                                text = selfIngredient.text.ifEmpty { "재료 입력..." },
+                                fontSize = 18.sp,
+                                fontWeight = FontWeight(500),
+                                fontFamily = pretendard,
+                                color = Color(0xFF1045A1)
+                            )
+                        }
+                        Spacer(modifier = Modifier.height(5.dp))
+
+                        // 담기 버튼
+                        Box(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .height(50.dp)
+                                .background(
+                                    color = Color(0xFF90CAF8), shape = RoundedCornerShape(
+                                        bottomStart = 10.dp, bottomEnd = 10.dp
+                                    )
+                                )
+                                .clickable {
+                                    if (selfIngredient.text.isNotEmpty()) {
+                                        cartList.add(selfIngredient.text) // 장바구니에 추가
+                                        selfIngredient = TextFieldValue("") // 입력 초기화
+                                    }
+                                }, contentAlignment = Alignment.Center
+                        ) {
+                            Text(
+                                text = "담기",
+                                fontSize = 18.sp,
+                                fontWeight = FontWeight(600),
+                                fontFamily = pretendard,
+                                textAlign = TextAlign.Center,
+                                color = Color(0xFF1045A1)
+                            )
+                        }
+                    }
+                }
+
+                Spacer(modifier = Modifier.height(10.dp))
+
+                // 장바구니 담기는 칸 (3개 이상부터 스크롤 가능)
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
                         .background(
                             color = Color(0xFFEAF6FF), shape = RoundedCornerShape(size = 10.dp)
                         )
+                        .wrapContentHeight()
                 ) {
                     Column {
-                        cartList.forEach { ingredient ->
-                            Row(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .padding(8.dp),
-                                verticalAlignment = Alignment.CenterVertically
-                            ) {
-                                Row(
+                        if (cartList.isNotEmpty()) {
+                            if (cartList.size > 3) {
+                                LazyColumn(
                                     modifier = Modifier
                                         .fillMaxWidth()
-                                        .height(50.dp)
-                                        .background(
-                                            Color.Transparent, RoundedCornerShape(10.dp)
-                                        ),
-                                    verticalAlignment = Alignment.CenterVertically,
-                                    horizontalArrangement = Arrangement.SpaceBetween
+                                        .height(180.dp) // 최대 높이 설정 (스크롤 가능)
                                 ) {
-                                    Text(
-                                        text = ingredient.name + "/D-" + ingredient.getDday() + "/" + ingredient.category,
-                                        fontSize = 18.sp,
-                                        fontWeight = FontWeight(500),
-                                        fontFamily = pretendard,
-                                        color = Color(0xFF1045A1),
-                                        modifier = Modifier
-                                            .weight(1f)
-                                            .padding(8.dp)
-                                    )
-
-                                    IconButton(
-                                        onClick = {
-                                            cartList =
-                                                cartList.filter { it != ingredient }
-                                                    .toMutableList()
-                                        }, modifier = Modifier.size(30.dp)
-                                    ) {
-                                        Icon(
-                                            painter = painterResource(id = android.R.drawable.ic_delete),
-                                            contentDescription = "삭제",
-                                            tint = Color.Red
-                                        )
+                                    items(cartList) { ingredientName ->
+                                        CartIngredientRow(ingredientName, cartList)
                                     }
                                 }
-
+                            } else {
+                                cartList.forEach { ingredientName ->
+                                    CartIngredientRow(ingredientName, cartList)
+                                }
+                            }
+                        } else {
+                            Box(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .height(55.dp),
+                                contentAlignment = Alignment.Center
+                            ) {
+                                Text(
+                                    text = "장바구니가 비어있습니다",
+                                    fontSize = 18.sp,
+                                    fontWeight = FontWeight(500),
+                                    fontFamily = pretendard,
+                                    textAlign = TextAlign.Center,
+                                    color = Color(0xFF1045A1)
+                                )
                             }
                         }
+
+                        Spacer(modifier = Modifier.height(10.dp))
+
                         // 구매완료 버튼
                         Box(
                             modifier = Modifier
@@ -614,8 +686,11 @@ fun IngredientScreen(navController: NavController) {
                                     )
                                 )
                                 .clickable {
-                                    cartList.clear() //장바구니 비우기
-                                }, contentAlignment = Alignment.Center
+                                    if (cartList.isNotEmpty()) {
+                                        cartList.clear() // 리스트 비우기 (추가 후 리셋)
+                                    }
+                                },
+                            contentAlignment = Alignment.Center
                         ) {
                             Text(
                                 text = "구매완료",
@@ -626,17 +701,16 @@ fun IngredientScreen(navController: NavController) {
                                 color = Color(0xFF1045A1)
                             )
                         }
-
-
                     }
                 }
-
             }
-
-
         }
 
+
+
+
         if (!isTextFieldFocused && selectedTabIndex == -1) {
+
             Column(
                 verticalArrangement = Arrangement.Center,
                 horizontalAlignment = Alignment.CenterHorizontally
@@ -715,8 +789,9 @@ fun IngredientScreen(navController: NavController) {
 
 }
 
+
 @Preview(showBackground = true)
 @Composable
-fun PreviewTestScreen() {
+fun PreviewIngredientScreen() {
     IngredientScreen(navController = rememberNavController())
 }
