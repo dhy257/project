@@ -1,5 +1,6 @@
 package com.example.frontend
 
+import android.content.Context
 import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -8,9 +9,11 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
@@ -25,17 +28,32 @@ import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import androidx.navigation.compose.rememberNavController
 
 
-@Preview
+@Preview(showBackground = true)
 @Composable
-fun LoginScreen(navController: NavController) {
+fun PreviewLoginScreen() {
+    LoginScreen(
+        navController = rememberNavController(), context = null
+
+    )
+}
+
+@Composable
+fun LoginScreen(
+    navController: NavController, context: Context?
+) {
+
+    val sharedPreferences = context?.getSharedPreferences("UserPrefs", Context.MODE_PRIVATE)
+
 
     var email by remember {
         mutableStateOf("")
@@ -44,16 +62,23 @@ fun LoginScreen(navController: NavController) {
     var password by remember {
         mutableStateOf("")
     }
+
+    var userName by remember { mutableStateOf("") } // 사용자 이름 저장
+
+    var showDialog by remember { mutableStateOf(false) } // 팝업 표시 여부
+    var loginSuccess by remember { mutableStateOf(false) } // 로그인 성공 여부
+
     Image(
+        modifier = Modifier.fillMaxSize(),
         painter = painterResource(R.drawable.login),
-        contentDescription = null,
-        contentScale = ContentScale.None
+        contentDescription = "로그인 배경",
+        contentScale = ContentScale.Crop
     )
 
     Column(
         modifier = Modifier
-            .width(393.dp)
-            .height(852.dp),
+            //화면 비율 맞추기
+            .fillMaxSize(),
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
@@ -78,7 +103,14 @@ fun LoginScreen(navController: NavController) {
                 unfocusedContainerColor = Color(0xFFBBDEFA),
                 focusedContainerColor = Color(0xFFBBDEFA),
                 focusedIndicatorColor = Color.Transparent,
-                unfocusedIndicatorColor = Color.Transparent
+                unfocusedIndicatorColor = Color.Transparent,
+                focusedTextColor = Color(0xFF1045A1),
+                unfocusedTextColor = Color(0xFF1045A1)
+            ),
+            textStyle = TextStyle(
+                fontSize = 20.sp,
+                fontFamily = pretendard,
+                fontWeight = FontWeight(500)
             ),
             shape = RoundedCornerShape(size = 10.dp),
             placeholder = {
@@ -111,7 +143,14 @@ fun LoginScreen(navController: NavController) {
                 unfocusedContainerColor = Color(0xFFBBDEFA),
                 focusedContainerColor = Color(0xFFBBDEFA),
                 focusedIndicatorColor = Color.Transparent,
-                unfocusedIndicatorColor = Color.Transparent
+                unfocusedIndicatorColor = Color.Transparent,
+                focusedTextColor = Color(0xFF1045A1),
+                unfocusedTextColor = Color(0xFF1045A1)
+            ),
+            textStyle = TextStyle(
+                fontSize = 20.sp,
+                fontFamily = pretendard,
+                fontWeight = FontWeight(500)
             ),
             shape = RoundedCornerShape(size = 10.dp),
             placeholder = {
@@ -136,7 +175,21 @@ fun LoginScreen(navController: NavController) {
 
         Button(
             onClick = {
-                Log.i("LogInfo", "Email : $email Password : $password")
+                if (context != null) { // context가 null이 아닐 때만 실행
+                    Log.i("LogInfo", "Email : $email Password : $password")
+                    val savedEmail = sharedPreferences?.getString("saved_email", null)
+                    val savedPassword = sharedPreferences?.getString("saved_password", null)
+
+                    if (email == savedEmail && password == savedPassword) {
+                        loginSuccess = true
+                        userName = sharedPreferences?.getString("saved_name", "") ?: ""
+                        showDialog = true // 로그인 성공 팝업 표시
+                    } else {
+                        loginSuccess = false
+                        showDialog = true // 로그인 실패 팝업 표시
+                        Log.e("LoginError", "로그인 실패: 이메일 또는 비밀번호가 일치하지 않음")
+                    }
+                }
             },
             modifier = Modifier
                 .shadow(
@@ -156,6 +209,19 @@ fun LoginScreen(navController: NavController) {
                 fontFamily = pretendard,
                 fontWeight = FontWeight(500),
                 color = Color(0xFFEAF6FF)
+            )
+        }
+
+        // 로그인 결과 팝업
+        if (showDialog) {
+            CustomAlertDialog(
+                title = if (loginSuccess) "로그인 성공" else "로그인 실패",
+                message = if (loginSuccess) "$userName 님 환영합니다!" else "이메일 또는 비밀번호가 올바르지 않습니다.",
+                onDismiss = { showDialog = false },
+                onConfirm = {
+                    showDialog = false
+                    if (loginSuccess) navController.navigate(Routes.MainScreen)
+                }
             )
         }
 
@@ -188,4 +254,3 @@ fun LoginScreen(navController: NavController) {
 
 
 }
-

@@ -1,7 +1,8 @@
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
-//    id("com.google.relay") version "0.3.12"
+    // Kotlin serialization plugin for type safe routes and navigation arguments
+    kotlin("plugin.serialization") version "2.0.21"
 }
 
 android {
@@ -64,15 +65,39 @@ dependencies {
     implementation(libs.androidx.ui.tooling.preview)
     implementation(libs.androidx.material3)
 
-//    implementation(libs.androidx.navigation.common)
-//    implementation(libs.androidx.navigation.runtime.ktx)
-//    implementation(libs.androidx.navigation.compose)
-//    implementation(libs.androidx.constraintlayout)
 
-    val nav_version = "2.8.4"
+    val nav_version = "2.8.6"
+    // Jetpack Compose integration
     implementation("androidx.navigation:navigation-compose:$nav_version")
 
+    // splash screen
     implementation("androidx.core:core-splashscreen:1.0.1")
+
+    // CameraX core library using the camera2 implementation
+    val camerax_version = "1.4.1"
+    // The following line is optional, as the core library is included indirectly by camera-camera2
+    implementation("androidx.camera:camera-core:${camerax_version}")
+    implementation("androidx.camera:camera-camera2:${camerax_version}")
+    // If you want to additionally use the CameraX Lifecycle library
+    implementation("androidx.camera:camera-lifecycle:${camerax_version}")
+    // If you want to additionally use the CameraX VideoCapture library
+    implementation("androidx.camera:camera-video:${camerax_version}")
+    // If you want to additionally use the CameraX View class
+    implementation("androidx.camera:camera-view:${camerax_version}")
+    // If you want to additionally add CameraX ML Kit Vision Integration
+    implementation("androidx.camera:camera-mlkit-vision:${camerax_version}")
+    // If you want to additionally use the CameraX Extensions library
+    implementation("androidx.camera:camera-extensions:${camerax_version}")
+
+    //retrofit
+    implementation("com.squareup.retrofit2:retrofit:2.9.0")
+    implementation("com.squareup.retrofit2:converter-gson:2.9.0")
+
+//    //ML kit
+//    implementation ("com.google.mlkit:text-recognition-korean:16.0.0")
+//    implementation ("com.google.mlkit:text-recognition:16.0.0")
+//    implementation ("com.google.mlkit:text-recognition-korean:16.0.0")
+
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
