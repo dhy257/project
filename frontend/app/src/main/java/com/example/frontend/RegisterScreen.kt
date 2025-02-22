@@ -1,5 +1,7 @@
 package com.example.frontend
 
+import android.content.Context
+import android.content.SharedPreferences
 import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -8,9 +10,11 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
@@ -25,16 +29,27 @@ import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import androidx.navigation.compose.rememberNavController
 
-@Preview
+@Preview(showBackground = true)
 @Composable
-fun RegisterScreen(navController: NavController) {
+fun PreviewRegisterScreen() {
+    RegisterScreen(navController = rememberNavController(), context = null)
+}
+
+@Composable
+fun RegisterScreen(
+    navController: NavController, context: Context?
+) {
+
+    val sharedPreferences = context?.getSharedPreferences("UserPrefs", Context.MODE_PRIVATE)
 
     var name by remember {
         mutableStateOf("")
@@ -47,16 +62,21 @@ fun RegisterScreen(navController: NavController) {
     var password by remember {
         mutableStateOf("")
     }
+
+    var showDialog by remember { mutableStateOf(false) } // 팝업 표시 여부
+    var showErrorDialog by remember { mutableStateOf(false) } // 중복 이메일 오류 팝업 표시 여부
+
     Image(
+        modifier = Modifier.fillMaxSize(),
         painter = painterResource(R.drawable.register),
         contentDescription = null,
-        contentScale = ContentScale.None
+        contentScale = ContentScale.Crop
     )
 
     Column(
         modifier = Modifier
-            .width(393.dp)
-            .height(852.dp),
+            //배경 비율 채우기
+            .fillMaxSize(),
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
@@ -81,7 +101,14 @@ fun RegisterScreen(navController: NavController) {
                 unfocusedContainerColor = Color(0xFFBBDEFA),
                 focusedContainerColor = Color(0xFFBBDEFA),
                 focusedIndicatorColor = Color.Transparent,
-                unfocusedIndicatorColor = Color.Transparent
+                unfocusedIndicatorColor = Color.Transparent,
+                focusedTextColor = Color(0xFF1045A1),
+                unfocusedTextColor = Color(0xFF1045A1)
+            ),
+            textStyle = TextStyle(
+                fontSize = 20.sp,
+                fontFamily = pretendard,
+                fontWeight = FontWeight(500)
             ),
             shape = RoundedCornerShape(size = 10.dp),
             placeholder = {
@@ -114,7 +141,14 @@ fun RegisterScreen(navController: NavController) {
                 unfocusedContainerColor = Color(0xFFBBDEFA),
                 focusedContainerColor = Color(0xFFBBDEFA),
                 focusedIndicatorColor = Color.Transparent,
-                unfocusedIndicatorColor = Color.Transparent
+                unfocusedIndicatorColor = Color.Transparent,
+                focusedTextColor = Color(0xFF1045A1),
+                unfocusedTextColor = Color(0xFF1045A1)
+            ),
+            textStyle = TextStyle(
+                fontSize = 20.sp,
+                fontFamily = pretendard,
+                fontWeight = FontWeight(500)
             ),
             shape = RoundedCornerShape(size = 10.dp),
             placeholder = {
@@ -126,7 +160,6 @@ fun RegisterScreen(navController: NavController) {
                     color = Color(0xFFEAF6FF)
                 )
             },
-            visualTransformation = PasswordVisualTransformation(),
             leadingIcon = {
                 Icon(
                     painter = painterResource(R.drawable.email_icon),
@@ -148,7 +181,14 @@ fun RegisterScreen(navController: NavController) {
                 unfocusedContainerColor = Color(0xFFBBDEFA),
                 focusedContainerColor = Color(0xFFBBDEFA),
                 focusedIndicatorColor = Color.Transparent,
-                unfocusedIndicatorColor = Color.Transparent
+                unfocusedIndicatorColor = Color.Transparent,
+                focusedTextColor = Color(0xFF1045A1),
+                unfocusedTextColor = Color(0xFF1045A1)
+            ),
+            textStyle = TextStyle(
+                fontSize = 20.sp,
+                fontFamily = pretendard,
+                fontWeight = FontWeight(500)
             ),
             shape = RoundedCornerShape(size = 10.dp),
             placeholder = {
@@ -173,7 +213,23 @@ fun RegisterScreen(navController: NavController) {
 
         Button(
             onClick = {
-                Log.i("RegisterInfo", "Name : $name Email : $email Password : $password")
+
+                if (context != null) { // context가 null이 아닐 때만 실행
+                    val savedEmail = sharedPreferences?.getString("saved_email", null)
+
+                    if (savedEmail == email) {
+                        showErrorDialog = true // 중복 이메일 팝업 표시
+                    } else {
+                        sharedPreferences?.edit()?.apply {
+                            putString("saved_name", name)
+                            putString("saved_email", email)
+                            putString("saved_password", password)
+                            apply()
+                        }
+                        showDialog = true // 회원가입 성공 팝업 표시
+                        Log.i("RegisterInfo", "Name : $name Email : $email Password : $password")
+                    }
+                }
             },
             modifier = Modifier
                 .shadow(
@@ -196,6 +252,24 @@ fun RegisterScreen(navController: NavController) {
             )
         }
 
+        if (showDialog) {
+            CustomAlertDialog(
+                title = "회원가입 완료",
+                message = "회원가입이 성공적으로 완료되었습니다!",
+                onDismiss = { showDialog = false },
+                onConfirm = { showDialog = false }
+            )
+        }
+
+        if (showErrorDialog) {
+            CustomAlertDialog(
+                title = "회원가입 실패",
+                message = "이미 사용 중인 이메일입니다.",
+                onDismiss = { showErrorDialog = false },
+                onConfirm = { showErrorDialog = false }
+            )
+        }
+
         Spacer(modifier = Modifier.height(18.dp))
 
         Row {
@@ -210,7 +284,8 @@ fun RegisterScreen(navController: NavController) {
             Spacer(modifier = Modifier.width(10.dp))
 
             Text(
-                text = "로그인", modifier = Modifier.clickable {navController.navigate(Routes.LoginScreen)},
+                text = "로그인",
+                modifier = Modifier.clickable { navController.navigate(Routes.LoginScreen) },
                 fontSize = 15.sp,
                 fontFamily = pretendard,
                 fontWeight = FontWeight(900),
@@ -221,6 +296,4 @@ fun RegisterScreen(navController: NavController) {
 
     }
 
-
 }
-
