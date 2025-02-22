@@ -1,6 +1,6 @@
-package com.graduationwork.back_end.controller;
+package com.graduationwork.back_end.bert.controller;
 
-import com.graduationwork.back_end.service.PredictionService;
+import com.graduationwork.back_end.bert.service.PredictionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -24,11 +24,20 @@ public class PredictionController {
 
     // Modify the method to accept the 'text' field as part of the request body
     @PostMapping
-    public ResponseEntity<String> getPrediction(@RequestBody Map<String, List<String>> requestBody) {
-        List<String> texts = requestBody.get("text");  // Extract the list of texts from the request body
-        logger.info("Received request with texts: {}", texts);  // Log the received list of items
+    public ResponseEntity<String> getPrediction(@RequestBody Map<String, Object> requestBody) {
+        Object textValue = requestBody.get("text");
+        List<String> texts;
 
-        // Pass the list of texts to the service method
+        if (textValue instanceof String) {
+            texts = List.of((String) textValue);
+        } else if (textValue instanceof List) {
+            texts = (List<String>) textValue;
+        } else {
+            texts = List.of();
+        }
+
+        logger.info("Received request with texts: {}", texts);
         return predictionService.getPredictionFromFlask(texts);
     }
+
 }

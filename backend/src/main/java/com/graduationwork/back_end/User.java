@@ -1,15 +1,16 @@
 package com.graduationwork.back_end;
 
 import jakarta.persistence.*;
-
 import java.time.LocalDateTime;
 
 @Entity
+@Table(name = "user")
 public class User {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int user_id;
+    @Column(name = "user_id")  // DB 컬럼명
+    private Long userId;         // 자바 필드명
 
     private String username;
     private String email;
@@ -27,12 +28,13 @@ public class User {
         this.created_at = LocalDateTime.now();
     }
 
-    public int getUser_id() {
-        return user_id;
+    // 수정된 getter와 setter
+    public Long getUserId() {
+        return userId;
     }
 
-    public void setUser_id(int user_id) {
-        this.user_id = user_id;
+    public void setUserId(Long userId) {
+        this.userId = userId;
     }
 
     public String getUsername() {
@@ -43,9 +45,13 @@ public class User {
         this.username = username;
     }
 
-    public String getEmail() { return email; }
+    public String getEmail() {
+        return email;
+    }
 
-    public void setEmail(String email) { this.email = email; }
+    public void setEmail(String email) {
+        this.email = email;
+    }
 
     public String getPassword() {
         return password;
@@ -55,8 +61,12 @@ public class User {
         this.password = password;
     }
 
-    public String findByEmail(String email) {
-        return username;
+    public LocalDateTime getCreated_at() {
+        return created_at;
+    }
+
+    public void setCreated_at(LocalDateTime created_at) {
+        this.created_at = created_at;
     }
 
     @PrePersist
@@ -64,14 +74,5 @@ public class User {
         if (created_at == null) {
             created_at = LocalDateTime.now(); // 현재 시간으로 설정
         }
-    }
-
-
-    public LocalDateTime getCreated_at() {
-        return created_at;
-    }
-
-    public void setCreated_at(LocalDateTime created_at) {
-        this.created_at = created_at;
     }
 }

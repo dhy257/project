@@ -1,4 +1,4 @@
-package com.graduationwork.back_end.config;
+package com.graduationwork.back_end.bert.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

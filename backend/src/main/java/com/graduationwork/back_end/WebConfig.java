@@ -1,4 +1,4 @@
-package com.graduationwork.back_end.config;
+package com.graduationwork.back_end;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -16,5 +16,11 @@ public class WebConfig implements WebMvcConfigurer {
                 .allowedMethods("GET", "POST", "PUT", "DELETE") // Allow specific HTTP methods
                 .allowedHeaders("*")  // Allow all headers
                 .allowCredentials(true);  // Allow credentials (cookies, authorization headers, etc.)
+
+        registry.addMapping("/**")  // 모든 경로에 대해 CORS 허용
+                .allowedOrigins("http://localhost:3000")  // 클라이언트 앱의 URL (예: React 앱이 실행되는 주소)
+                .allowedMethods("GET", "POST", "PUT", "DELETE")  // 허용할 HTTP 메서드
+                .allowedHeaders("*");  // 모든 헤더를 허용
+
     }
 }

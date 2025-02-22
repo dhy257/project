@@ -74,8 +74,9 @@
 
     ```json
     {
-      "items": ["milk", "bread", "cherry tomatoes"]
+   "text": ["고기", "음료수"]
     }
+
     ```
 
 3. **응답 예시**:

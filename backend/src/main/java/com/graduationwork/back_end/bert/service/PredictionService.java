@@ -1,4 +1,4 @@
-package com.graduationwork.back_end.service;
+package com.graduationwork.back_end.bert.service;
 
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
