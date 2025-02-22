@@ -1,4 +1,4 @@
-package com.example.frontend.extrafunc
+package com.example.frontend
 
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
@@ -13,7 +13,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.sp
-import com.example.frontend.pretendard
 
 @Composable
 fun CustomAlertDialog(

@@ -1,19 +1,10 @@
-package com.example.frontend.extrafunc
+package com.example.frontend
 
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.platform.LocalContext
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.example.frontend.CalendarScreen
-import com.example.frontend.CameraScreen
-import com.example.frontend.FridgeScreen
-import com.example.frontend.IngredientScreen
-import com.example.frontend.LoginScreen
-import com.example.frontend.MainScreen
-import com.example.frontend.ReciptScreen
-import com.example.frontend.RegisterScreen
-import com.example.frontend.Routes
 
 
 @Composable
@@ -55,11 +46,6 @@ fun FreshCheckApp() {
             //카메라 화면
             composable(Routes.CameraScreen) {
                 CameraScreen(navController)
-            }
-
-            //냉장고 화면
-            composable(Routes.FridgeScreen) {
-                FridgeScreen(navController)
             }
 
         })
