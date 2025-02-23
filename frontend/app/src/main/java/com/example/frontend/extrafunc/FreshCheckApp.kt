@@ -8,12 +8,14 @@ import androidx.navigation.compose.rememberNavController
 import com.example.frontend.CalendarScreen
 import com.example.frontend.CameraScreen
 import com.example.frontend.FridgeScreen
+import com.example.frontend.HistoryListScreen
 import com.example.frontend.IngredientScreen
 import com.example.frontend.LoginScreen
 import com.example.frontend.MainScreen
 import com.example.frontend.ReciptScreen
 import com.example.frontend.RegisterScreen
 import com.example.frontend.Routes
+import com.example.frontend.historyListState
 
 
 @Composable
@@ -60,6 +62,11 @@ fun FreshCheckApp() {
             //냉장고 화면
             composable(Routes.FridgeScreen) {
                 FridgeScreen(navController)
+            }
+
+            //소비/낭비 내역 추가
+            composable(Routes.HistoryListScreen) {
+                HistoryListScreen(navController, historyListState)
             }
 
         })

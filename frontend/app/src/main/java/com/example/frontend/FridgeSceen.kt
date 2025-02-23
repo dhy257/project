@@ -84,7 +84,7 @@ fun FridgeScreen(
             Button(
                 onClick = {
                     // 소비/낭비 내역 보기 화면으로 이동
-                    //navController.navigate(Routes.HistoryListScreen)
+                    navController.navigate(Routes.HistoryListScreen)
                           },
                 modifier = Modifier
                     .wrapContentWidth()
