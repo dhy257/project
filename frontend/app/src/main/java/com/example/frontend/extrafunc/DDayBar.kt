@@ -1,4 +1,4 @@
-package com.example.frontend.extrafunc
+package com.example.frontend
 import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -13,14 +14,18 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.frontend.Ingredient
-import com.example.frontend.R
+import java.time.LocalDate
+import java.time.temporal.ChronoUnit
 
 @Composable
-fun DDayBar(fridgeList: List<Ingredient>) {
-    val sortedIngredients = fridgeList.sortedBy { it.getDday() }.take(3)
+fun DDayBar(
+    //fridgeList: List<Ingredient>
+    historyList: SnapshotStateList<Ingredient>
+) {
 
-    Log.d("FridgeListLog", "DDayBar에 전달된 fridgeList: $fridgeList")
+    val sortedIngredients = historyList
+        .filter { it.state == IngredientState.FRESH } // 신선 상태만 필터링
+    Log.d("FridgeListLog", "DDayBar에 전달된 fridgeList: $historyList")
 
     Row(
         modifier = Modifier
@@ -37,7 +42,7 @@ fun DDayBar(fridgeList: List<Ingredient>) {
         )
 
         sortedIngredients.forEach { ingredient ->
-            val dDay = ingredient.getDday().toInt() // ✅ Long → Int 변환
+            val dDay = ChronoUnit.DAYS.between(LocalDate.now(), ingredient.expiryDate).toInt()
 
             //D-Day에 따른 색상 설정
             val dDayColor = when {
@@ -46,9 +51,11 @@ fun DDayBar(fridgeList: List<Ingredient>) {
                 else -> Color(0xFF388E3C) // 4일 이상 (초록)
             }
 
+
             Column(
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
+
                 Image(
                     painter = painterResource(id = getImageForCategory(ingredient.category)),
                     contentDescription = ingredient.name,
@@ -69,21 +76,7 @@ fun DDayBar(fridgeList: List<Ingredient>) {
                     color = Color(0xFF1A72D3)
                 )
             }
-        }
-    }
-}
 
-@Composable
-fun getImageForCategory(category: String): Int {
-    return when (category) {
-        "즉석식품" -> R.drawable.alarm_icon
-        "음료" -> R.drawable.back_arrow
-        "가공식품" -> R.drawable.email_icon
-        "조미식품" -> R.drawable.password_icon
-        "유제품" -> R.drawable.analysis_icon
-        "신선식품" -> R.drawable.calendar_icon
-        "어패류" -> R.drawable.camera_icon
-        "육류" -> R.drawable.search_icon
-        else -> R.drawable.name_icon // 기본 아이콘
+        }
     }
 }
