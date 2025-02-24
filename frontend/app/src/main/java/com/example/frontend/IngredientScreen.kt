@@ -33,6 +33,7 @@ import java.time.format.DateTimeFormatter
 
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.frontend.extrafunc.BottomNavigationBar
 import com.example.frontend.extrafunc.CartIngredientRow
 import com.example.frontend.extrafunc.DatePickerModal
@@ -43,7 +44,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 // 냉장고 재료 리스트 (전역 변수)
-val fridgeList = mutableStateListOf<Ingredient>()
+var fridgeList = mutableStateListOf<Ingredient>()
 
 // 장바구니 리스트 (전역 변수로 변경하여 상태 유지)
 val cartList = mutableStateListOf<String>()
@@ -51,7 +52,8 @@ val cartList = mutableStateListOf<String>()
 val ingredientList = mutableStateListOf<Ingredient>()
 
 @Composable
-fun IngredientScreen(navController: NavController) {
+fun IngredientScreen(navController: NavController
+) {
     var selectedTabIndex by remember { mutableStateOf(-1) }
     var selfIngredient by remember { mutableStateOf(TextFieldValue("")) }
     var isTextFieldFocused by remember { mutableStateOf(false) }
@@ -59,7 +61,7 @@ fun IngredientScreen(navController: NavController) {
     // 유통기한 및 식품군 관련 상태
     var selectedDate by remember { mutableStateOf(LocalDate.now()) }
     var showDatePicker by remember { mutableStateOf(false) }
-    val foodCategories = listOf("즉석식품", "음료", "가공식품", "조미식품", "유제품", "신선식품", "어패류", "육류")
+    val foodCategories = listOf("가공식품", "간식", "신선식품", "어패류", "유제품", "육류", "음료", "조미식품","즉석식품")
     var expanded by remember { mutableStateOf(false) }
     var selectedCategory by remember { mutableStateOf(foodCategories.first()) }
 
@@ -89,7 +91,7 @@ fun IngredientScreen(navController: NavController) {
         contentScale = ContentScale.Crop
     )
 
-// 팝업 메시지
+    // 팝업 메시지
     if (showPopup) {
         TopPopupMessage(message = "새로운 재료(${ingredientList.size})가 추가되었습니다") {
             showPopup = false
@@ -780,9 +782,7 @@ fun IngredientScreen(navController: NavController) {
         Spacer(modifier = Modifier.weight(1f))
         BottomNavigationBar(
             selectedTab = "Ingredient", onTabSelected = {
-                if (it != "Profile") { // 오른쪽 버튼은 비활성화
-                    navigateSafely(navController, it)
-                }
+
             }, navController = navController
         )
     }
