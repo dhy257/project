@@ -42,7 +42,6 @@ import androidx.compose.runtime.remember
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.example.frontend.extrafunc.BottomNavigationBar
-import com.example.frontend.extrafunc.DDayBar
 
 @Preview(showBackground = true)
 @Composable
