@@ -1,6 +1,6 @@
 package com.graduationwork.back_end.receipt.cotroller;
 
-import com.graduationwork.back_end.UserRepository;
+import com.graduationwork.back_end.user.repository.UserRepository;
 import com.graduationwork.back_end.receipt.dto.*;
 import com.graduationwork.back_end.receipt.model.Item;
 import com.graduationwork.back_end.receipt.model.ItemStatus;
@@ -15,8 +15,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
-import com.graduationwork.back_end.User;
-import com.graduationwork.back_end.UserRepository;
+import com.graduationwork.back_end.user.User;
 
 @RestController
 @RequestMapping("/item")

@@ -6,21 +6,18 @@ import com.graduationwork.back_end.receipt.ReceiptOcr;
 import com.graduationwork.back_end.receipt.dto.PredictedItemDto;
 import com.graduationwork.back_end.receipt.model.Receipt;
 import com.graduationwork.back_end.receipt.repository.ReceiptRepository;
-import com.graduationwork.back_end.User;
-import com.graduationwork.back_end.UserRepository;
+import com.graduationwork.back_end.user.User;
+import com.graduationwork.back_end.user.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.multipart.MultipartFile;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
+
 import java.io.File;
 import java.io.IOException;
 import java.util.*;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 @Service
 public class ReceiptService {

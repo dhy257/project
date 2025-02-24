@@ -1,4 +1,4 @@
-package com.graduationwork.back_end.receipt.controller;
+package com.graduationwork.back_end.receipt.cotroller;
 
 import com.graduationwork.back_end.receipt.dto.PredictedItemDto;
 import com.graduationwork.back_end.receipt.service.ReceiptService;

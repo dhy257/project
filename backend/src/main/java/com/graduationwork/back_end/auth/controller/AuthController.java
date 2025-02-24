@@ -1,5 +1,7 @@
-package com.graduationwork.back_end;
+package com.graduationwork.back_end.auth.controller;
 
+import com.graduationwork.back_end.user.User;
+import com.graduationwork.back_end.user.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;

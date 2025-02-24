@@ -4,7 +4,7 @@ import jakarta.persistence.*;
 import org.hibernate.annotations.CreationTimestamp;
 import java.time.LocalDateTime;
 import java.util.List;
-import com.graduationwork.back_end.User;
+import com.graduationwork.back_end.user.User;
 
 @Entity
 public class Receipt {

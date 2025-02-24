@@ -1,4 +1,4 @@
-package com.graduationwork.back_end;
+package com.graduationwork.back_end.auth.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -20,7 +20,10 @@ public class SecurityConfig {
                                 "/api/user/logout",
                                 "/predict",
                                 "/receipt/**",  // ✅ `/receipt/upload` 허용
-                                "/item/**"// ✅ `/item/save` 허용
+                                "/item/**", // ✅ `/item/save` 허용
+                                "/api/recommend/**",
+                                "/recommend/**"
+
                         ).permitAll()
                         .anyRequest().authenticated() // 나머지는 인증 필요
                 );
