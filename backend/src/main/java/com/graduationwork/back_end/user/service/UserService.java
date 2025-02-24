@@ -1,5 +1,7 @@
-package com.graduationwork.back_end;
+package com.graduationwork.back_end.user.service;
 
+import com.graduationwork.back_end.user.User;
+import com.graduationwork.back_end.user.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;

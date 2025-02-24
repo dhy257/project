@@ -1,4 +1,4 @@
-package com.graduationwork.back_end;
+package com.graduationwork.back_end.user;
 
 import jakarta.persistence.*;
 import java.time.LocalDateTime;
@@ -9,7 +9,7 @@ public class User {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "user_id")  // DB 컬럼명
+    @Column(name = "id")  // DB 컬럼명
     private Long userId;         // 자바 필드명
 
     private String username;

@@ -9,10 +9,10 @@ app = Flask(__name__)
 CORS(app)
 
 # BERT 모델 로드 (fine-tuned 모델)
-model = BertForSequenceClassification.from_pretrained('bert-base-multilingual-cased', num_labels=18)
+model = BertForSequenceClassification.from_pretrained('bert-base-multilingual-cased', num_labels=9)
 
-# 모델 가중치 로드
-model.load_state_dict(torch.load('model/model.pth', weights_only=True))
+# 🔥 모델 가중치 로드 (CPU에서 실행하도록 수정)
+model.load_state_dict(torch.load('model/model.pth', map_location=torch.device('cpu')))
 
 # 모델을 평가 모드로 전환
 model.eval()
@@ -39,6 +39,8 @@ def predict():
 
         for text in texts:
             inputs = tokenizer(text, return_tensors='pt', padding=True, truncation=True, max_length=64)
+
+            # 🔥 CPU에서 실행하도록 변경
             with torch.no_grad():
                 outputs = model(**inputs)
                 logits = outputs.logits
@@ -46,12 +48,17 @@ def predict():
                 prediction = torch.argmax(logits, dim=1).item()
                 app.logger.info("Prediction: %d", prediction)
 
+            # 🔹 새로운 라벨 맵 적용
             label_map = {
-                0: "곡류", 1: "조미식품", 2: "유제품류", 3: "채소류", 4: "가공식품류",
-                5: "즉석식품류", 6: "기타식품류", 7: "과일류", 8: "육류 및 그 제품",
-                9: "어패류 및 그 제품", 10: "빙과류", 11: "음료류", 12: "과자류·빵류 또는 떡류",
-                13: "식용유지류", 14: "코코아가공품류 또는 초콜릿류", 15: "절임류 또는 조림류",
-                16: "특수영양식품", 17: "특수의료용도식품"
+                0: "가공식품",
+                1: "간식",
+                2: "신선식품",
+                3: "어패류",
+                4: "유제품",
+                5: "육류",
+                6: "음료",
+                7: "조미식품",
+                8: "즉석식품"
             }
 
             category_name = label_map.get(prediction, "알 수 없는 카테고리")

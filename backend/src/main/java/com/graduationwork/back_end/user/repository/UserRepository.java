@@ -1,5 +1,6 @@
-package com.graduationwork.back_end;
+package com.graduationwork.back_end.user.repository;
 
+import com.graduationwork.back_end.user.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 import java.util.Optional;
