@@ -20,12 +20,13 @@ import java.time.temporal.ChronoUnit
 @Composable
 fun DDayBar(
     //fridgeList: List<Ingredient>
-    historyList: SnapshotStateList<Ingredient>
+    //historyList: SnapshotStateList<Ingredient>
 ) {
-
-    val sortedIngredients = historyList
+    val sortedIngredients = fridgeList
         .filter { it.state == IngredientState.FRESH } // 신선 상태만 필터링
-    Log.d("FridgeListLog", "DDayBar에 전달된 fridgeList: $historyList")
+        .sortedBy { it.expiryDate } // 유통기한이 빠른 순으로 정렬
+        .take(3) // 가장 빠른 3개만 선택
+    Log.d("FridgeListLog", "DDayBar에 전달된 fridgeList: $fridgeList")
 
     Row(
         modifier = Modifier
@@ -67,7 +68,7 @@ fun DDayBar(
                 Text(
                     text = "D-$dDay",
                     fontSize = 12.sp,
-                    color = dDayColor // ✅ D-Day 색상 적용
+                    color = dDayColor //D-Day 색상 적용
                 )
                 Text(
                     text = ingredient.name,

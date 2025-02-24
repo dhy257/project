@@ -64,12 +64,12 @@ fun BottomNavigationBar(
 
         Spacer(modifier = Modifier.width(15.dp))
 
-        // 우측 버튼: 클릭 불가능 (비활성화)
+        // 우측 버튼: 세팅 화면 이동
         NavigationButton(
             iconRes = R.drawable.profile_bottom_icon,
             isSelected = selectedTab == "Profile",
             onClick = {
-                //
+                navigateSafely(navController, Routes.SettingScreen)
             }
         )
     }

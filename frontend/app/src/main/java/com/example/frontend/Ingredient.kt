@@ -14,7 +14,8 @@ data class Ingredient(
     val category: String,
     val addedDate: LocalDate,
     val expiryDate: LocalDate,
-    var state: IngredientState = IngredientState.FRESH
+    var state: IngredientState = IngredientState.FRESH,
+    var stateChangeDate: LocalDate? = null // 상태 변경 날짜 추가
 ) {
 
     fun getDday(): Long {
@@ -23,10 +24,11 @@ data class Ingredient(
 
     fun waste() {
         state = IngredientState.WASTED // 낭비 상태로 변경
+        stateChangeDate = LocalDate.now() // 낭비 상태 변경 날짜 기록
     }
 
     fun consume() {
         state = IngredientState.CONSUMED // 소비 상태로 변경
-
+        stateChangeDate = LocalDate.now() // 낭비 상태 변경 날짜 기록
     }
 }

@@ -30,23 +30,42 @@ val historyListState = mutableStateListOf<Ingredient>()  // 소비,낭비된 재
 fun FridgeScreen(
     navController: NavController
 ) {
-    // 상태를 SnapshotStateList로 관리
-    val fridgeListState = remember { mutableStateListOf<Ingredient>().apply { addAll(fridgeList) } }
+//    // 상태를 SnapshotStateList로 관리
+//    val fridgeListState = remember { mutableStateListOf<Ingredient>().apply { addAll(fridgeList) } }
+//
+//    val groupedIngredients = fridgeListState
+//        .filter { it.state == IngredientState.FRESH } // 신선 상태만 필터링
+//        .groupBy { it.category }
+//
+//
+//    // 유통기한이 지난 재료 자동 낭비 처리 (중복 방지 적용)
+//    LaunchedEffect(fridgeListState) {
+//        fridgeListState.forEach { ingredient ->
+//            if (ingredient.getDday() < 0 && ingredient.state != IngredientState.WASTED) {
+//                ingredient.waste()
+//
+//                // 기존 ID가 존재하는 경우 제거 후 추가
+//                historyListState.removeIf { it.id == ingredient.id }
+//                historyListState.add(ingredient)
+//            }
+//        }
+//    }
 
-    val groupedIngredients = fridgeListState
+    val groupedIngredients = fridgeList
         .filter { it.state == IngredientState.FRESH } // 신선 상태만 필터링
         .groupBy { it.category }
 
 
     // 유통기한이 지난 재료 자동 낭비 처리 (중복 방지 적용)
-    LaunchedEffect(fridgeListState) {
-        fridgeListState.forEach { ingredient ->
+    LaunchedEffect(fridgeList) {
+        fridgeList.forEach { ingredient ->
             if (ingredient.getDday() < 0 && ingredient.state != IngredientState.WASTED) {
                 ingredient.waste()
 
                 // 기존 ID가 존재하는 경우 제거 후 추가
                 historyListState.removeIf { it.id == ingredient.id }
                 historyListState.add(ingredient)
+
             }
         }
     }
@@ -70,9 +89,11 @@ fun FridgeScreen(
                 .fillMaxSize()
                 .padding(16.dp)
         ) {
+            Spacer(modifier = Modifier.height(60.dp))
             Text(
                 text = "냉장고 재료 관리",
                 fontSize = 25.sp,
+                fontFamily = pretendard,
                 fontWeight = FontWeight(600),
                 color = Color(0xFF1A72D3),
                 modifier = Modifier
@@ -82,22 +103,19 @@ fun FridgeScreen(
             )
 
             Button(
-                onClick = {
-                    // 소비/낭비 내역 보기 화면으로 이동
-                    navController.navigate(Routes.HistoryListScreen)
-                          },
+                onClick = { navController.navigate(Routes.HistoryListScreen) }, // 소비/낭비 내역 보기 화면으로 이동
                 modifier = Modifier
                     .wrapContentWidth()
                     .padding(bottom = 16.dp),
                 colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF1A72D3))
             ) {
-                Text(text = "소비/낭비 내역 보기", color = Color.White, fontSize = 18.sp)
+                Text(text = "소비/낭비 내역 보기", color = Color.White, fontSize = 18.sp,fontFamily = pretendard)
             }
 
             Box(
                 modifier = Modifier
                     .weight(1f)
-                    .padding(bottom = 70.dp)
+                    .padding(bottom = 100.dp)
             ) {
                 if (groupedIngredients.isEmpty()) {
                     Box(
@@ -107,6 +125,7 @@ fun FridgeScreen(
                         Text(
                             text = "냉장고가 비어 있습니다.",
                             fontSize = 18.sp,
+                            fontFamily = pretendard,
                             fontWeight = FontWeight(500),
                             color = Color.Gray,
                             textAlign = TextAlign.Center
@@ -123,6 +142,7 @@ fun FridgeScreen(
                                     Text(
                                         text = "$category (${items.size})",
                                         fontSize = 20.sp,
+                                        fontFamily = pretendard,
                                         fontWeight = FontWeight(500),
                                         color = Color(0xFF1A72D3),
                                         modifier = Modifier.padding(8.dp)
@@ -139,8 +159,10 @@ fun FridgeScreen(
                                             FridgeItem(ingredient) {
                                                 // UI 업데이트를 위해 상태 변경 후 리스트 갱신
                                                 ingredient.consume()
-                                                fridgeListState.remove(ingredient)
-                                                fridgeListState.add(ingredient) // 변경된 상태 반영
+                                                //fridgeListState.remove(ingredient)
+                                                //fridgeListState.add(ingredient) // 변경된 상태 반영
+                                                fridgeList.remove(ingredient)
+                                                fridgeList.add(ingredient) // 변경된 상태 반영
                                                 if (ingredient.state == IngredientState.CONSUMED || ingredient.state == IngredientState.WASTED) {
                                                     historyListState.removeIf { it.id == ingredient.id }
                                                     historyListState.add(ingredient)
@@ -168,9 +190,7 @@ fun FridgeScreen(
             BottomNavigationBar(
                 selectedTab = "Main",
                 onTabSelected = {
-                    if (it != "Profile") {
-                        navigateSafely(navController, it)
-                    }
+
                 },
                 navController = navController
             )

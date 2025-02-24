@@ -10,4 +10,6 @@ object Routes {
     var CameraScreen = "Camerascreen"
     var FridgeScreen = "FridgeScreen"
     var HistoryListScreen = "HistoryListScreen"
+    var AnalysisScreen = "AnalysisScreen"
+    var SettingScreen = "SettingScreen"
 }

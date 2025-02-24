@@ -64,13 +64,14 @@ fun PreviewConsumedListScreen() {
             )
         )
     }
-    HistoryListScreen(navController = rememberNavController(), historyList = sampleConsumedList)
+    HistoryListScreen(navController = rememberNavController()
+        , historyList = sampleConsumedList)
 }
 
 @Composable
 fun HistoryListScreen(navController: NavController, historyList: SnapshotStateList<Ingredient>) {
 
-    // 소비/낭비 상태인 재료만 필터링
+    // 소비/낭비 상태인 재료만 필터링하여 카테고리별 그룹화
     val groupedHistory = historyList
         .filter { it.state == IngredientState.CONSUMED || it.state == IngredientState.WASTED }
         .groupBy { it.category }
@@ -120,9 +121,9 @@ fun HistoryListScreen(navController: NavController, historyList: SnapshotStateLi
                                         .fillMaxWidth()
                                         .heightIn(max = 350.dp) // 스크롤 가능
                                 ) {
-                                    // 고유 ID를 key 값으로 사용하여 중복 방지
-                                    items(historyList.sortedBy { it.expiryDate }, key = { it.id }) { ingredient ->
-                                        HistoryItem(ingredient) // 개별 재료 표시
+                                    // **카테고리별 아이템만 전달하여 중복 방지**
+                                    items(items.sortedBy { it.expiryDate }, key = { it.id }) { ingredient ->
+                                        HistoryItem(ingredient)
                                     }
                                 }
                             }
